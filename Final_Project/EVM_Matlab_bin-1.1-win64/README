@@ -1,0 +1,189 @@
+This package is a binary version of our MATLAB implementation of the paper:
+
+Eulerian Video Magnification for Revealing Subtle Changes in the World
+ACM Transaction on Graphics, Volume 31, Number 4 (Proceedings SIGGRAPH
+2012)
+
+This version of our algorithm can be run from the command line. It doesn't
+require any programming or for MATLAB to be installed. Instead, all that is
+needed is the MATLAB Compiler Runtime, which is free and only takes a couple
+of minutes to install.
+
+See below for installation instructions, running instructions and 
+licensing information.
+
+For questions/feedback/bugs, or if you would like to make commercial use of
+this software, please contact:
+Michael Rubinstein <mrub@mit.edu>
+Computer Science and Artificial Intelligence Lab, MIT
+
+
+This package was prepared by:
+
+Woo Hyeok Kang <wkang@mit.edu>
+Computer Science and Artificial Intelligence Lab, MIT
+10 June 2013
+
+
+------------------------------------------------------------
+- Installing
+------------------------------------------------------------
+
+The supplied executable require MATLAB Compiler Runtime (MCR)
+version v80 (R2012b). You can download and install the appropriate MCR for
+your operating system through these links (64-bit architecture computers ONLY):
+
+Linux:   http://people.csail.mit.edu/mrub/evm/bin/MCR_R2012b_glnxa64_installer.zip
+Windows: http://people.csail.mit.edu/mrub/evm/bin/MCR_R2012b_win64_installer.exe
+MacOS:	 http://people.csail.mit.edu/mrub/evm/bin/MCR_R2012b_maci64_installer.zip
+
+Note that the version of MCR is critical to the functionality (i.e. does not
+work with other MCR versions).
+
+This software was tested on
+(i)  Windows 8 64-Bit with 6GB RAM
+(ii) Ubuntu 12.04 LTS with 6GB RAM
+(iii)Mac OS X 10.8 with 2GB RAM
+
+
+------------------------------------------------------------
+- Running
+------------------------------------------------------------
+
+To reproduce the results in the SIGGRAPH 2012 paper:
+----------------------------------------------------
+
+[Note that baby.mp4 and wrist.mp4 results, which used iir temporal filters are
+not reproduced, as this binary executable does not support iir filters]
+
+1. Download the source videos from the project web page into a directory
+"data" inside the directory containing this executable.
+2. Depending on your OS:
+
+Windows: run reproduce_results.bat
+
+Linux: run ./reproduce_results.sh
+    [if Matlab Compiler Runtime is installed in a directory other than 
+    '/usr/local/MATLAB/MATLAB_Compiler_Runtime/v80', the default path on Ubuntu 12.04 LTS,
+    run following in command line before running reproduce_results.sh: 
+    MCR='path/to/MATLAB_Compiler_Runtime/v80'
+    export MCR] 
+
+MacOS: run ./reproduce_results.sh
+    [if Matlab Compiler Runtime is installed in a directory other than 
+    '/Applications/MATLAB/MATLAB_Compiler_Runtime/v80', the default path on Mac OS X 10.8,
+    run following in command line before running reproduce_results.sh: 
+    MCR='path/to/MATLAB_Compiler_Runtime/v80'
+    export MCR] 
+
+NOTE MacOS Users: Strings of "This process is attempting to exclude an item from
+Time MAchine by path without administrator privileges. This is not supported" appear.
+They do not, however, affect the generated results. This applies also to processing
+your own videos.
+    
+3. The results will be saved under the directory ResultsSIGGRAPH2012
+
+NOTE: Generating each of the results will take a few minutes. We
+have selected parameters that result in better looking videos,
+however, depending on your application, you may not need such high
+quality results.
+
+The parameters we used to generate the results presented in the
+paper can be found in the script "reproduceResults.m". Please refer to the
+paper for more detail on selecting the values for the parameters. In some
+cases, the parameters reported in the paper do not exactly match the ones
+in the script, as we have refined our parameters through experimentation.
+Feel free to experiment on your own!
+
+
+To process your own videos:
+---------------------------
+
+Run the appropriate evm binary file (denote EVM_BIN):
+
+Windows: evm.exe
+Linux: ./run_evm.sh
+MacOS: ./run_evm.sh
+
+EVM_BIN vidFile outDir samplingRate magType lo hi alpha filterType [magnification_parameters]
+
+vidFile: the input video file
+outDir: directory under which the output video will be stored (the actual 
+    name of the output video file is set automatically according to the
+    choice of filter, amplification, etc.)
+samplingRate: the sampling frequency of video [Hz] (notice this may be different
+    from the frame rate of the actual video file)
+magType: type of magnification (without quotes):
+    "color": for amplifying color
+    "motion": for amplifying motion
+lo: low frequency cutoff [Hz]
+hi: high frequency cutoff [Hz]
+alpha: amplification factor
+filterType: the type of temporal filter (without quotes)
+    "ideal" [default]
+    "butter"
+
+
+------------------------------------------------------------
+- Magnification Parameters
+------------------------------------------------------------
+
+This Section explains the parameters used by each type of magnification.
+Note that these parameters are optional, and thus need not be specified (default values
+are listed below).
+
+But if specified, parameters should appear in this order in command-line:
+      
+chromAttenuation magParam
+
+chromAttenuation: chrominance Attenuation
+  (i) motion amplification default value: 0.1
+  (ii) color amplification default value: 1
+magParam: 
+  (i) motion amplification default value: 16
+  (ii) color amplification default value: 4
+
+In Motion Amplification, magParam denotes the spatial frequency cutoff.
+In Color Amplification, magParam denotes the level of spatial Gaussian Blur Stack.
+
+------------------------------------------------------------
+- Fixes for Common Errors
+------------------------------------------------------------
+Error Message: 
+      Could not find version 8.0 of the MCR.
+      Attempting to load mclmcrrt8_0.dll
+      Please install the correct version of the MCR.
+
+Fix:
+(I) If you are calling EVM_BIN from command line:
+    Windows:
+    $>> set PATH=C:\Program Files\MATLAB\MATLAB Compiler Runtime\v80\runtime\win64;%PATH%
+    $>> export PATH
+    $>> evm.exe vidFile outDir samplingRate magType lo hi alpha filterType [magnification_parameters]
+
+    Linux/Mac:
+    $>>  MCR=<root/directory/to/mcr>/v80
+    $>>	 ./run_evm.sh $MCR vidFile outDir samplingRate magType lo hi alpha filterType [magnification_parameters]
+
+(II) If you are calling EVM_BIN from script:
+     Windows (.bat batch scripts)
+     Include the following line somewhere in the beginning with a text editor:
+     set PATH=C:\Program Files\MATLAB\MATLAB Compiler Runtime\v80\runtime\win64;%PATH%
+
+     Linux/Mac (.sh Bourne Shell Scripts)
+     Include the following line somewhere in the beginning with a text editor:
+     MCR=<root/directory/to/mcr>/v80
+
+     Call EVM_BIN with the following syntax:
+     ./run_evm.sh $MCR vidFile outDir samplingRate magType lo hi alpha filterType [magnification_parameters]
+
+
+------------------------------------------------------------
+- Licensing
+------------------------------------------------------------
+
+The code is supplied for educational purposes only. Please refer to the
+enclosed LICENSE.pdf file(under release_bin/LICENSE.pdf) regarding permission to use the software.
+Please cite our paper if you use any part of the code or data on the
+project web page. Please contact the authors below if you wish to use the
+code commercially.

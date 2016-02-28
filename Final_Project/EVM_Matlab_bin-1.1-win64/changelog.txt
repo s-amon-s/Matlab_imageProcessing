@@ -1,0 +1,9 @@
+Version 1.1
+
+- Added changelog.txt
+- reproduce_results.sh errors for Mac binary fixed
+- README includes 'Fixes for Common Errors,' specific to Mac/Linux OS
+
+Version 1.0
+
+- Windows, Linux, Mac OS binary executables added

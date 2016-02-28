@@ -1,0 +1,313 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Procolorseg</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-02-21"><meta name="DC.source" content="Procolorseg.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Retrieve image and 3 planes</a></li><li><a href="#3">thresholding</a></li><li><a href="#4">Smooth the image</a></li><li><a href="#5">Get starting and ending Indexes and radius for drawing circle</a></li><li><a href="#6">Processing here</a></li><li><a href="#7">Display all the processed images</a></li><li><a href="#9">Circle implementation</a></li><li><a href="#10">Display images</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> Procolorseg()
+</pre><h2>Retrieve image and 3 planes<a name="2"></a></h2><pre class="codeinput"><span class="comment">% Read the puppyWithBall.jpg and assign to variable puppy</span>
+<span class="comment">% Get all the 3 plains of this image seperately and store to r(RED)</span>
+<span class="comment">% g(GREEN) b(BLUE) respectively</span>
+
+    puppy = imread(<span class="string">'PuppyWithBall.jpg'</span>); <span class="comment">%original image</span>
+    temp1 = puppy; <span class="comment">% temp1 storing original image for safe processing</span>
+    r = puppy(:,:,1);
+    g = puppy(:,:,2);
+    b = puppy(:,:,3);
+</pre><h2>thresholding<a name="3"></a></h2><p>Threashold all the 3 plains, can be done intuitively or trial and errors Better approach is to use impixel function and see the range of pixels e.g --&gt; 1) array = impixel(puppy); 2) select the desired area,double click</p><pre class="codeinput"><span class="keyword">for</span> i=1:size(puppy,1)
+    <span class="keyword">for</span> j=1:size(puppy,2)
+        <span class="keyword">if</span> r(i,j)&lt;93 || g(i,j)&gt;54 || b(i,j)&gt;80
+           r(i,j)=0;
+           g(i,j)=0;
+           b(i,j)=0;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><h2>Smooth the image<a name="4"></a></h2><p>Use median filter to remove any gaussian or salt and pepper noise  ~Median filter was modified to give better smoothing result~**</p><pre class="codeinput">     r = Mymed(r);
+     g = Mymed(g);
+     b = Mymed(b);
+     red_ball = cat(3,r,g,b);
+     temp2 = red_ball; <span class="comment">%store in temp2 for further processing</span>
+</pre><h2>Get starting and ending Indexes and radius for drawing circle<a name="5"></a></h2><pre class="codeinput">    [y x] = find(r&gt;0); <span class="comment">% find all the pixels' cordinates of the red ball</span>
+
+    startX = min(x);
+    endX = max(x);
+    centerX = startX+((endX-startX)./2); <span class="comment">%x cordinate of the center</span>
+
+    startY = min(y);
+    endY = max(y);
+    centerY = startY+((endY-startY)./2); <span class="comment">%y cordinate of the center</span>
+
+<span class="comment">%     ball_template = red_ball(startY:endY,startX:endX,:); %for template matching, not applicable</span>
+
+    <span class="comment">% for filling the center of the ball [fill the white spot in the ball]</span>
+    offsetX = ceil((centerX-startX)./2); <span class="comment">%calculate by (radiusX of the ball)/2</span>
+    offsetY = (centerY-startY)-3; <span class="comment">%calculate by (radiusY of the ball)</span>
+</pre><h2>Processing here<a name="6"></a></h2><pre class="codeinput"><span class="keyword">for</span> i=1:size(puppy,1)
+       <span class="keyword">for</span> j=1:size(puppy,2)
+
+           cc = find(i==y);
+           ccc = find(j==x);
+           cccc = checkBorder(i,j,centerX,centerY,offsetY);
+
+             <span class="keyword">if</span> i&gt;(centerY-offsetY) &amp;&amp; i&lt;(centerY+offsetY) &amp;&amp; j&gt;(centerX-offsetX) &amp;&amp; j&lt;(centerX+offsetX)
+                 temp2(i,j,:) = temp1(i,j,:);
+             <span class="keyword">elseif</span> i&gt;endY
+                 temp2(i,j,:) = 0;
+             <span class="keyword">end</span>
+
+             <span class="keyword">if</span> cccc == 1
+                  temp1(i,j,:) = 0;
+             <span class="keyword">end</span>
+<span class="comment">%</span>
+             <span class="keyword">if</span> j&lt;startX ||j&gt;endX
+                     temp1(:,j,:) = 0;
+             <span class="keyword">end</span>
+
+             <span class="keyword">if</span> i&lt;startY || i&gt;endY
+                   temp1(i,:,:) = 0;
+             <span class="keyword">end</span>
+
+       <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><h2>Display all the processed images<a name="7"></a></h2><pre class="codeinput">     display(puppy,temp1,temp2);
+<span class="comment">%    display(puppy,red_ball,ball_template,temp1,temp2);</span>
+</pre><img vspace="5" hspace="5" src="Procolorseg_01.png" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><h2>Circle implementation<a name="9"></a></h2><pre class="codeinput"><span class="keyword">function</span> output = checkBorder(i,j,send1,send2,x)
+       base   = abs(j-send1);
+       height = abs(i-send2);
+       border =(base.^2 + height.^2).^0.5;
+       output = 2;
+
+       radius = x; <span class="comment">%radius of the circle</span>
+
+      <span class="keyword">if</span> border &gt; radius
+           output=1;
+       <span class="keyword">else</span>
+           output =0;
+       <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><h2>Display images<a name="10"></a></h2><pre class="codeinput"><span class="keyword">function</span> display(puppy,temp1,temp2)
+
+figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1]);<span class="comment">%fullscreen figure</span>
+
+<span class="comment">%original</span>
+        subplot(131);imshow(puppy);title(<span class="string">'Original Image'</span>);
+<span class="comment">%color processing</span>
+        subplot(132);imshow(temp2);title(<span class="string">'Ouptput, Image Filling'</span>);
+<span class="comment">%circle filtered</span>
+        subplot(133);imshow(temp1,[]);title(<span class="string">'Ouptput,Circle Filtering(RGB)'</span>);
+
+
+<span class="comment">%threshold --&gt; smooth</span>
+          <span class="comment">%imshow(red_ball);title('After Threasholding and Median Filter');figure;</span>
+<span class="comment">%ball template</span>
+          <span class="comment">%imshow(ball_template);title('Template for template matching, Not used');figure;</span>
+<span class="comment">%circle filtered</span>
+<span class="comment">%         subplot(221);imshow(temp1(:,:,1));title('Ouptput,Circle Filtering(RED)');</span>
+<span class="comment">%         subplot(222);imshow(temp1(:,:,2));title('Ouptput,Circle Filtering(BLUE)');</span>
+<span class="comment">%         subplot(223);imshow(temp1(:,:,3));title('Ouptput,Circle Filtering(GREEN)');</span>
+
+<span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function Procolorseg()
+
+%% Retrieve image and 3 planes
+
+% Read the puppyWithBall.jpg and assign to variable puppy
+% Get all the 3 plains of this image seperately and store to r(RED)
+% g(GREEN) b(BLUE) respectively
+
+    puppy = imread('PuppyWithBall.jpg'); %original image
+    temp1 = puppy; % temp1 storing original image for safe processing
+    r = puppy(:,:,1);
+    g = puppy(:,:,2);
+    b = puppy(:,:,3);
+    
+%% thresholding
+% Threashold all the 3 plains, can be done intuitively or trial and errors
+% Better approach is to use impixel function and see the range of pixels 
+% e.g REPLACE_WITH_DASH_DASH> 1) array = impixel(puppy); 2) select the desired area,double click
+for i=1:size(puppy,1)
+    for j=1:size(puppy,2)
+        if r(i,j)<93 || g(i,j)>54 || b(i,j)>80
+           r(i,j)=0;
+           g(i,j)=0;
+           b(i,j)=0;
+        end
+    end
+end
+
+%% Smooth the image
+% Use median filter to remove any gaussian or salt and pepper noise
+%  **~Median filter was modified to give better smoothing result~**
+     r = Mymed(r);
+     g = Mymed(g);
+     b = Mymed(b);
+     red_ball = cat(3,r,g,b);
+     temp2 = red_ball; %store in temp2 for further processing
+     
+%% Get starting and ending Indexes and radius for drawing circle
+
+    [y x] = find(r>0); % find all the pixels' cordinates of the red ball
+    
+    startX = min(x);
+    endX = max(x);
+    centerX = startX+((endX-startX)./2); %x cordinate of the center
+    
+    startY = min(y);
+    endY = max(y);
+    centerY = startY+((endY-startY)./2); %y cordinate of the center
+       
+%     ball_template = red_ball(startY:endY,startX:endX,:); %for template matching, not applicable
+    
+    % for filling the center of the ball [fill the white spot in the ball]
+    offsetX = ceil((centerX-startX)./2); %calculate by (radiusX of the ball)/2
+    offsetY = (centerY-startY)-3; %calculate by (radiusY of the ball)
+
+%% Processing here
+for i=1:size(puppy,1)
+       for j=1:size(puppy,2)
+           
+           cc = find(i==y);
+           ccc = find(j==x);
+           cccc = checkBorder(i,j,centerX,centerY,offsetY);
+             
+             if i>(centerY-offsetY) && i<(centerY+offsetY) && j>(centerX-offsetX) && j<(centerX+offsetX)
+                 temp2(i,j,:) = temp1(i,j,:);
+             elseif i>endY
+                 temp2(i,j,:) = 0;
+             end
+             
+             if cccc == 1
+                  temp1(i,j,:) = 0;
+             end
+%              
+             if j<startX ||j>endX
+                     temp1(:,j,:) = 0;
+             end
+             
+             if i<startY || i>endY
+                   temp1(i,:,:) = 0;
+             end
+                 
+       end
+end
+
+%% Display all the processed images 
+     display(puppy,temp1,temp2);
+%    display(puppy,red_ball,ball_template,temp1,temp2);
+   
+end
+
+%% Circle implementation
+function output = checkBorder(i,j,send1,send2,x)
+       base   = abs(j-send1);
+       height = abs(i-send2);
+       border =(base.^2 + height.^2).^0.5;
+       output = 2;
+       
+       radius = x; %radius of the circle
+       
+      if border > radius
+           output=1;
+       else
+           output =0;
+       end
+end
+
+%% Display images
+function display(puppy,temp1,temp2)
+
+figure('units','normalized','outerposition',[0 0 1 1]);%fullscreen figure
+
+%original
+        subplot(131);imshow(puppy);title('Original Image');
+%color processing
+        subplot(132);imshow(temp2);title('Ouptput, Image Filling');
+%circle filtered
+        subplot(133);imshow(temp1,[]);title('Ouptput,Circle Filtering(RGB)');
+        
+        
+%threshold REPLACE_WITH_DASH_DASH> smooth
+          %imshow(red_ball);title('After Threasholding and Median Filter');figure;
+%ball template
+          %imshow(ball_template);title('Template for template matching, Not used');figure;
+%circle filtered
+%         subplot(221);imshow(temp1(:,:,1));title('Ouptput,Circle Filtering(RED)');
+%         subplot(222);imshow(temp1(:,:,2));title('Ouptput,Circle Filtering(BLUE)');
+%         subplot(223);imshow(temp1(:,:,3));title('Ouptput,Circle Filtering(GREEN)');
+       
+end
+
+
+
+
+
+
+
+##### SOURCE END #####
+--></body></html>

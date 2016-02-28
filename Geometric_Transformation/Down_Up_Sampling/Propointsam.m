@@ -1,0 +1,19 @@
+function Propointsam( )
+%UNTITLED Summary of this function goes here
+%   Detailed explanation goes here
+woman = imread('woman_blonde.tif');
+
+im_size = size(woman,1);
+
+sampled_image = zeros(im_size/2,im_size/2);
+sampled_image(:,:) = woman(1:2:im_size,1:2:im_size);
+
+plotIt(woman,'Original Image 256x256',1);
+plotIt(sampled_image,'Sampled image 128x128',2);
+end
+
+function plotIt(image,text,n)
+subplot(1,2,n);
+imshow(image,[]);
+title(text);
+end

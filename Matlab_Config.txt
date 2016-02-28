@@ -1,0 +1,1 @@
+cd( prefdir ); % to change to matlab's preferable directory
