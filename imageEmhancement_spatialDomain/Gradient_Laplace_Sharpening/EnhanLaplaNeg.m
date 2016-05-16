@@ -18,7 +18,7 @@ for row = 1: i
         img2(row,col) = lap_val;
     end
 end
-sharp_img = image-(img2.*0.7);
+sharp_img = image+(img2.*0.7);
 figure()
 subplot(2,2,1);
 imshow(image);

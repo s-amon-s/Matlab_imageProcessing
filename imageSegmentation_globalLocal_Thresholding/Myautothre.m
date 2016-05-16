@@ -12,7 +12,7 @@ done = false;
 gg = 0;
 
     while ~done
-     
+            disp(['T = ',num2str(T)]);
             temp = coin(coin>gtg);
             mue1 = mean(temp);
 
@@ -33,15 +33,7 @@ gg = 0;
 disp([num2str(gg),' times to get the value']);
  
  %% Manual Thresholding
- for i=1:size(coin,1)
-     for j=1:size(coin,2)
-         if coin(i,j,1) < gtg
-             coin(i,j,:) = 0;
-         else
-             coin(i,j,:) = 255;
-         end
-     end
- end
+ coin = coin > gtg;
 %% Display thresholded image
  output = coin;
  imshow(output,[]);

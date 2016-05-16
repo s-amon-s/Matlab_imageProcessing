@@ -1,4 +1,4 @@
-function Probilinear(x_new,y_new )
+function Probilinear(x_new,y_new)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 woman = imread('woman_blonde.tif');
@@ -28,9 +28,9 @@ for count1 = 0:x_new-1
      I22 = woman(1+ceil(count1./x_scale),1+ceil(count2./y_scale));
      
      scaled_image (count1+1,count2+1) = (1-W).*(1-H).*I22 + (W).*(1-H).*I21 + (1-W).*(H).*I12 + (W).*(H).*I11;
-     
  end
 end
+
 imwrite(scaled_image/256,strcat('output_',num2str(x_new),'x',num2str(y_new),'.jpg'));
 
 text = strcat('Original Image: ',num2str(j),'x',num2str(k));  

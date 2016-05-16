@@ -1,0 +1,38 @@
+Representation and Description
+
+Objective:
+	To represent and describe information embeded in an image in other forms
+that are more suitable than the image itself.
+
+Benefits :
+	Easier to understand
+	Require fewer memory, faster to be processed
+	More 'ready to be used'
+
+What kind of information we can use ?
+	Boundary, shape
+	Region
+	Texture
+	Relation between regions
+
+
+Image Representation 
+|_____________________________________________
+|____________________________
+
+
+color
+description --> Histogram
+statistics --> color mean, variance
+
+texture
+
+
+Chain code: can not solve different starting points result in diffrent chain codes
+
+SolutionL normalization -> redefine the starting point such that the chain code forms
+			   a smallest number.
+
+Eg. 6553320000 -> 0000655332
+
+Object rotation results in different 

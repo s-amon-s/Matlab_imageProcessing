@@ -1,11 +1,8 @@
 function output = Mygrad()
-
 H_row = [1 1 1; 0 0 0; -1 -1 -1];
 H_column = [1 0 -1; 1 0 -1; 1 0 -1];
-
 image = imread('aaa256.jpg');
 [i,j] = size(image);
-
 Hr_img = image;
 Hc_img = image;
 
